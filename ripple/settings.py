@@ -36,6 +36,11 @@ elif getpass.getuser() == 'txsl':
         }
     }
 
+try:
+    FB_KEY = os.environ["FB_ID"]
+except KeyError:
+    print "No FB API key given"
+    FB_KEY = 'clearly_fake_key'
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -90,6 +95,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT,'../static'),
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -128,6 +134,7 @@ ROOT_URLCONF = 'ripple.urls'
 WSGI_APPLICATION = 'ripple.wsgi.application'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_ROOT,'templates')
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
