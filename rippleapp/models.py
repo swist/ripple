@@ -23,8 +23,8 @@ class Artist(ripple):
 	lastfm_id = models.CharField(max_length = 256)
 	soundcloud_id = models.CharField(max_length = 256)
 	fb_like_id = models.CharField(max_length = 256)
-	fb_page_id = models.CharField(max_lenght = 256)
-	events = models.ManyToManyField('Events', related_name = 'artists')
+	fb_page_id = models.CharField(max_length = 256)
+	events = models.ManyToManyField('Event', related_name = 'artists')
 
 class Event(ripple):
 	lastfm_id = models.CharField(max_length = 256)
