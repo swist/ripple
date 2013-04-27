@@ -1,8 +1,10 @@
+## The following requirements were added by pip --freeze:
 Django==1.5
 South==0.7.6
 decorator==3.4.0
 django-extensions==1.1.1
 django-tastypie==0.9.14
+django-watson==1.1.1
 httplib2==0.8
 lucene-querybuilder==0.1.6
 mimeparse==0.1.3
