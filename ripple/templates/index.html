@@ -66,6 +66,7 @@
             </div>
             <div class="span10">
               <div class="friends">
+                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
               </div>
             </div>
           </div>
@@ -73,9 +74,9 @@
       </script>
       <script id="friend-template" type="text/x-handlebars-template">
         {{#each friends}}
-          <a class="item friend-size-{{this.size}}" href="#/me/and/{{this.uid}}">
+          <a class="item friend-size-{{this.weight}}" href="#/user/{{../user.id}}/and/{{this.uid}}">
             {{friendPhoto this}}
-            <span class="number">{{this.size}} <i class="icon-thumbs-up"></i></span>
+            <span class="number">{{this.count}} <i class="icon-thumbs-up"></i></span>
             <span class="name">{{this.name}}</span>
           </a>
         {{/each}}
