@@ -52,6 +52,7 @@ def get_artist_song(request):
         mimetype = 'application/json'
         try:
             art.GetSoundcloud()
+            print art
             data = json.dumps(art.soundcloud_url)
             return HttpResponse(data, mimetype) 
         except:

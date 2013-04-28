@@ -2,6 +2,10 @@ Handlebars.registerHelper('friendPhoto', function(friend) {
   var size = 78 * Math.pow(2, friend['weight']);
   return new Handlebars.SafeString('<img src="https://graph.facebook.com/'+friend['uid']+'/picture?width='+size+'&height='+size+'" width="'+size+'" height="'+size+'">');
 });
+Handlebars.registerHelper('artistPhoto', function(friend) {
+  var size = 78 * Math.pow(2, friend['weight']);
+  return new Handlebars.SafeString('<img src="https://graph.facebook.com/'+friend['page_id']+'/picture?width='+size+'&height='+size+'" width="'+size+'" height="'+size+'">');
+});
 Handlebars.registerHelper('friendPhotoSize', function(friend) {
   return 78 * Math.pow(2, friend['weight']);
 });
@@ -9,10 +13,19 @@ Handlebars.registerHelper('momentCalendar', function(datetime) {
   return moment(datetime).calendar();
 });
 Handlebars.registerHelper('renderArtistLinks', function(artist) {
-                      // <li><a href="https://www.facebook.com/{{artist.id}}"><i class="icon-facebook"></i> Profile</a></li>
   console.log(artist);
-  return links;
-})
+  var links = '';
+  if (artist.link) {
+    links += '<li><a href="https://www.facebook.com/'+artist.id+'"><i class="icon-facebook"></i> Facebook</a></li>';
+  }
+  if (artist.website) {
+    var outLinks = artist.website.split(' ');
+    for (var i = 0; i < outLinks.length; i++) {
+      links += '';
+    }
+  }
+  return new Handlebars.SafeString(links);
+});
 
 $(document).ready(function() {
   var fbUser, uid, accessToken, friends, pages, cachedData = {}, cachedArtists = {}, cachedSongs = {};
@@ -144,10 +157,26 @@ $(document).ready(function() {
   var theContent = $('#the-content');
   var userTpl = Handlebars.compile($('#user-template').html());
   var friendTpl = Handlebars.compile($('#friend-template').html());
+  var artistTpl = Handlebars.compile($('#artists-template').html());
   var eventTpl = Handlebars.compile($('#event-template').html());
   var homeTpl = Handlebars.compile($('#main-page').html());
-  // var songTpl = Handlebars.compile($('#song-template').html());
+  var songTpl = Handlebars.compile($('#song-template').html());
 
+
+  Path
+    .map('#/user/:user_id/artists')
+    .to(function() {
+      console.log('looking at artists');
+      if (fbUser && fbUser['id'] == this.params['user_id']) {
+        renderArtistsPage(fbUser);
+      } else {
+        FB.api('/'+this.params['user_id'], function(response) {
+          fbUser = response;
+          //@todo check validity of response
+          renderArtistsPage(response);
+        });
+      }
+    });
 
   Path
     .map('#/user/:user_id')
@@ -166,6 +195,7 @@ $(document).ready(function() {
   function renderDiscoverPage(user) {
     theContent.html(userTpl({
       activeDiscover: true,
+      activeArtists: false,
       user: user
     }));
     goToServer('ajax/login', function(response) {
@@ -173,6 +203,23 @@ $(document).ready(function() {
       pages = response.pages;
       response.user = user;
       $('.friends').html(friendTpl(response)).masonry({
+        // options
+        itemSelector : '.item'
+      });
+    });
+  }
+
+  function renderArtistsPage(user) {
+    theContent.html(userTpl({
+      activeArtists: true,
+      activeDiscover: false,
+      user: user
+    }));
+    goToServer('ajax/login', function(response) {
+      friends = response.friends;
+      pages = response.pages;
+      response.user = user;
+      $('.friends').html(artistTpl(response)).masonry({
         // options
         itemSelector : '.item'
       });
@@ -315,9 +362,11 @@ $(document).ready(function() {
         // }));
       });
 
-      // $.post('ajax/artist_songs', { name: artist.name }, function(songs) {
-      //   console.log('got songs', songs);
-      // });
+      $.post('ajax/artist_songs', { name: artist.name }, function(songUrl) {
+        $('#artist-songs').html(songTpl({
+          song: songUrl
+        }));
+      });
   }
   Path
     .map('#/artist/:artist_id')

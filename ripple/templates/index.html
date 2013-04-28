@@ -67,12 +67,39 @@
                   </p>
                   <ul class="nav nav-list usernav">
                     <li><h2 class="username">{{user.name}}</h2></li>
+                    <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}"><i class="icon-group"></i> Discover</a></li>
+                    <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists"><i class="icon-music"></i> Artists</a></li>
                   </ul>
                 </div>
 
                 <div class="span10">
                   <div class="friends">
                     <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                  </div>
+                </div>
+              {{else}}
+                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading User...</h1>
+              {{/if}}
+            {{/if}}
+
+            {{#if activeArtists}}
+              {{#if user}}
+                <div class="span2 userinfo">
+                  <p class="text-center">
+                    <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
+                  </p>
+                  <ul class="nav nav-list usernav">
+                    <li><h2 class="username">{{user.name}}</h2></li>
+                    <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}"><i class="icon-group"></i> Discover</a></li>
+                    <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists"><i class="icon-music"></i> Artists</a></li>
+                  </ul>
+                </div>
+
+                <div class="span10">
+                  <div class="friends">
+                    {{#if activeArtists}}
+                      <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                    {{/if}}
                   </div>
                 </div>
               {{else}}
@@ -87,6 +114,8 @@
                 </p>
                 <ul class="nav nav-list usernav">
                   <li><h2 class="username">{{user.name}}</h2></li>
+                  <li><a href="#/user/{{user.id}}"><i class="icon-group"></i> Discover</a></li>
+                  <li class="active"><a href="#/user/{{user.id}}/artists"><i class="icon-music"></i> Artists</a></li>
                 </ul>
               </div>
               {{#if friend}}
@@ -155,6 +184,15 @@
           </a>
         {{/each}}
       </script>
+      <script id="artists-template" type="text/x-handlebars-template">
+        {{#each pages}}
+          <a class="item friend-size-{{this.weight}}" href="#/artist/{{this.page_id}}">
+            {{artistPhoto this}}
+            <span class="number">{{this.count}} <i class="icon-thumbs-up"></i></span>
+            <span class="name">{{this.name}}</span>
+          </a>
+        {{/each}}
+      </script>
       <script id="event-template" type="text/x-handlebars-template">
         {{#each events}}
           <div class="well event-item">
@@ -165,13 +203,20 @@
             {{/if}}
             <h4><a href="{{this.url}}" target="_blank">{{this.title}}</a></h4>
             <p>
-              <i class="icon-calendar"></i> {{this.startTime}}, {{this.startDate}}<br>
+              <i class="icon-calendar"></i> {{this.startDate}}<br>
               <i class="icon-map-marker"></i> {{this.venue.name}}
             </p>
           </div>
         {{else}}
           <p>No events.</p>
         {{/each}}
+      </script>
+      <script id="song-template" type="text/x-handlebars-template">
+        {{#if song}}
+          <iframe width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url={{song}}"></iframe>
+        {{else}}
+          <p>No song.</p>
+        {{/if}}
       </script>
     {% endverbatim %}
 
