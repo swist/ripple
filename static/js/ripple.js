@@ -278,7 +278,13 @@ $(document).ready(function() {
         // span.insertBefore("#search");
         // to_be_searched.push(ui.item);
         // console.log(to_be_searched);
-        window.location.hash = '#/user/'+fbUser['id']+'/friend/'+ui.item.id;
+        if (ui.item.category == 'Friends') {
+
+        window.location.hash = '#/user/'+fbUser['id']+'/and/'+ui.item.id; 
+        } else {
+
+        window.location.hash = '#/artist/'+ui.item.id;
+        }
       },
       change: function(){
         $("#search").val("").css("top",2);
