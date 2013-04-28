@@ -49,6 +49,7 @@ def get_artist_song(request):
         name = request.POST.get('name')
         art = Artist(name = name)
         art.GetMusicBrainz()
+        print art
         mimetype = 'application/json'
         try:
             art.GetSoundcloud()
