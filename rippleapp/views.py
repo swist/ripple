@@ -45,12 +45,14 @@ def get_artist_song(request):
         name = request.POST.get('name')
         art = Artist(name = name)
         art.GetMusicBrainz()
-        art.GetSoundcloud()
-        art.GetLastEvents()
-        art.GetFacebookID()
-        data = json.dumps(art.last_events)
         mimetype = 'application/json'
-        return HttpResponse(data, mimetype) 
+        try:
+            art.GetSoundcloud()
+            data = json.dumps(art.soundcloud_url)
+            return HttpResponse(data, mimetype) 
+        except:
+            data = ''
+            return HttpResponse(data, mimetype) 
 
 
 
