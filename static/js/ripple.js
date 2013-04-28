@@ -215,6 +215,12 @@ $(document).ready(function() {
       },
       change: function(){
         $("#search").val("").css("top",2);
+      },
+      search: function(){
+        $.post('ajax/search', to_be_searched, function(search_results){
+          console.log(search_results);
+        });
+
       }
     });
 
