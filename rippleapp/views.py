@@ -5,6 +5,7 @@ from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
 from ripple.settings import FB_KEY
 from fb_friends import getFriends
+from django.views.decorators.cache import cache_page
 
 from models import *
 
@@ -16,7 +17,7 @@ import re
 
 def index(request):
 	return render_to_response('index.html', {'FB_ID':FB_KEY}, context_instance=RequestContext(request))
-
+@cache_page(60 * 15)
 def login(request):
 	if request.is_ajax():
 		print request.POST
@@ -26,20 +27,23 @@ def login(request):
         data = json.dumps(getFriends(token, uid))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
-
+@cache_page(60 * 15)
 def get_artist_events(request):
     if request.is_ajax():
         name = request.POST.get('name')
-        art = Artist(name = name)
-        art.GetMusicBrainz()
-        art.GetSoundcloud()
-        art.GetLastEvents()
-        art.GetFacebookID()
+        if not Artist.objects.filter(name = name):
+            art = Artist(name = name)
+            art.GetMusicBrainz()
+            art.GetSoundcloud()
+            art.GetLastEvents()
+            art.GetFacebookID()
+        else:
+            art = Artist.objects.filter(name = name)[0]
         data = json.dumps(art.last_events)
         mimetype = 'application/json'
         print data
         return HttpResponse(data, mimetype) 
-
+@cache_page(60 * 15)
 def get_artist_song(request):
     if request.is_ajax():
         name = request.POST.get('name')
@@ -53,6 +57,14 @@ def get_artist_song(request):
         except:
             data = ''
             return HttpResponse(data, mimetype) 
+
+def search(request):
+    if request.is_ajax():
+        mimetype = 'application/json'
+        query = request.POST.get('query')
+        print query, type(query), request
+        data = ''
+        return HttpResponse(data, mimetype) 
 
 
 

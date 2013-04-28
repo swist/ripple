@@ -12,7 +12,8 @@ urlpatterns = patterns('',
     url(r'^$', 'rippleapp.views.index', name='index'),
     url(r'^ajax/login$', 'rippleapp.views.login', name='login'),
     url(r'^ajax/artist_events$', 'rippleapp.views.get_artist_events', name='artist_events'),
-    url(r'^ajax/artist_songs$', 'rippleapp.views.get_artist_song', name='artist_songs')
+    url(r'^ajax/artist_songs$', 'rippleapp.views.get_artist_song', name='artist_songs'),
+    url(r'^ajax/search$', 'rippleapp.views.search', name='search')
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
