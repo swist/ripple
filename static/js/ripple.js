@@ -184,7 +184,8 @@ $(document).ready(function() {
         var suggestions = [];
         console.log(friends);
         $.each(friends, function(i, user){
-          suggestions.push(user.name);
+          if (user.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
+          suggestions.push(user.name);}
         });
         console.log(suggestions);
         console.log(pages);
