@@ -17,7 +17,7 @@ import re
 
 def index(request):
 	return render_to_response('index.html', {'FB_ID':FB_KEY}, context_instance=RequestContext(request))
-@cache_page(60 * 15)
+@cache_page(60 * 60)
 def login(request):
 	if request.is_ajax():
 		print request.POST
@@ -27,7 +27,7 @@ def login(request):
         data = json.dumps(getFriends(token, uid))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
-@cache_page(60 * 15)
+@cache_page(60 * 60)
 def get_artist_events(request):
     if request.is_ajax():
         name = request.POST.get('name')
@@ -43,7 +43,7 @@ def get_artist_events(request):
         mimetype = 'application/json'
         print data
         return HttpResponse(data, mimetype) 
-@cache_page(60 * 15)
+@cache_page(60 * 60)
 def get_artist_song(request):
     if request.is_ajax():
         name = request.POST.get('name')

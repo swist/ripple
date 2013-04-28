@@ -342,7 +342,7 @@ $(document).ready(function() {
 
   Path.map('#/').to(function() {
     theContent.html(homeTpl());
-    $.okvideo({ source: '64964937' });
+    $.okvideo({ source: '_woNBiIyOKI' });
   }).exit(function() {
     $('#okplayer').remove();
   });
