@@ -2,8 +2,9 @@ import facebook
 import time
 import pprint
 import re
+import math
 
-	
+
 def getFriends(token):
 	pp = pprint.PrettyPrinter(indent = 4)
 	oauth_access_token  = token
@@ -18,16 +19,27 @@ def getFriends(token):
 
 	query_results = user_graph.fql(query)
 	print query_results
+
 	friends_data = (result for result in query_results if result['name'] == 'friends_data').next()['fql_result_set']
 	friends = (result for result in query_results if result['name'] == 'friends').next()['fql_result_set']
 	pages_data = (result for result in query_results if result['name'] == 'pages_data').next()['fql_result_set']
 
+	max_likes = 0
 
 	for friend in friends_data:
 		likes = [like['page_id'] for like in friends if like['uid'] == friend['uid']]
+		friend['count'] = len(likes)
+
+		if friend['count'] > max_likes:
+			max_likes = friend['count']
+
 		friend['likes'] = []
 		for like in likes:
 			entry = (result for result in pages_data if result['page_id'] == like).next()
 			friend['likes'].append(entry)
 
+	print max_likes
+	for friend in friends_data:
+		friend['weight'] = int(max(math.ceil(float((3 * (friend['count']-1.0)/(max_likes - 1)))), 1))
+		print friend['weight'], friend['count']
 	return {'friends': friends_data, 'pages': pages_data}

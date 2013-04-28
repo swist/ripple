@@ -10,7 +10,8 @@
 
     <!-- Le styles -->
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
-    <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet">
+    <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet">
+    <!-- <link href="{% static "css/bootstrap-responsive.css" %}" rel="stylesheet"> -->
     <link href="{% static "css/ripple.css" %}" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -21,15 +22,15 @@
   </head>
 
   <body>
-    <div class="navbar navbar-fixed-top">
+    <div id="main-menu" class="navbar navbar-static-top">
       <div class="navbar-inner">
-        <div class="container-fluid">
+        <div class="container">
           <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#">ripple</a>
+          <a class="brand" href="#"><i class="icon-music"></i> ripple</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right nav-auth">
               <li class="login"><a href="#">Log In Using Facebook</a></li>
@@ -67,10 +68,20 @@
               </ul>
             </div>
             <div class="span10">
-
+              <div class="friends">
+              </div>
             </div>
           </div>
         </div>
+      </script>
+      <script id="friend-template" type="text/x-handlebars-template">
+        {{#each friends}}
+          <a class="item friend-size-{{this.size}}" href="#/me/and/{{this.uid}}">
+            {{friendPhoto this}}
+            <span class="number">{{this.size}} <i class="icon-thumbs-up"></i></span>
+            <span class="name">{{this.name}}</span>
+          </a>
+        {{/each}}
       </script>
     {% endverbatim %}
 
@@ -85,6 +96,8 @@
     <script src="{% static "js/jquery-1.9.1.js" %}"></script>
     <script src="{% static "js/path.min.js" %}"></script>
     <script src="{% static "js/handlebars.js" %}"></script>
+    <script src="{% static "js/jquery.masonry.min.js" %}"></script>
+
     <!--
     <script src="js/bootstrap-transition.js"></script>
     <script src="js/bootstrap-alert.js"></script>

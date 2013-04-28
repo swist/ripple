@@ -1,5 +1,13 @@
+Handlebars.registerHelper('friendPhoto', function(friend) {
+  var size = 78 * Math.pow(2, friend['size']);
+  return new Handlebars.SafeString('<img src="https://graph.facebook.com/'+friend['id']+'/picture?width='+size+'&height='+size+'" width="'+size+'" height="'+size+'">');
+});
+Handlebars.registerHelper('friendPhotoSize', function(friend) {
+  return 78 * Math.pow(2, friend['size']);
+});
+
 $(document).ready(function() {
-  var fbUser;
+  var fbUser, uid, accessToken;
   $(window).bind('fbAsyncInit', function() {
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
@@ -8,9 +16,8 @@ $(document).ready(function() {
         // the user's ID, a valid access token, a signed
         // request, and the time the access token 
         // and signed request each expire
-        var uid = response.authResponse.userID;
-        var accessToken = response.authResponse.accessToken;
-        goToServer(uid, accessToken)
+        accessToken = response.authResponse.accessToken;
+        // goToServer(uid, accessToken);
         refreshCurrentUser();
       } else if (response.status === 'not_authorized') {
         // the user is logged in to Facebook, 
@@ -36,7 +43,7 @@ $(document).ready(function() {
     }
     return cookieValue;
   }
-  
+
   function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -49,8 +56,19 @@ $(document).ready(function() {
         }
     }
   });
-  function goToServer(id, token){
-    $.ajax({type:'POST', url:'ajax/login', data: { fbid: id, token: token }});
+  function goToServer(url, responseCb){
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        accessToken = response.authResponse.accessToken;
+        $.post(url, { fbid: response.authResponse.userID, token: accessToken }, responseCb);
+      } else if (response.status === 'not_authorized') {
+        // the user is logged in to Facebook, 
+        // but has not authenticated your app
+      } else {
+        // the user isn't logged in to Facebook.
+      }
+     });
+    //$.ajax({type:'POST', url:'ajax/login', data: { fbid: id, token: token }});
   }
   function refreshCurrentUser(successCb) {
     FB.api('/me', function(response) {
@@ -66,7 +84,7 @@ $(document).ready(function() {
       $('.nav-auth li').show();
       $('.nav-auth .login').hide();
       $('.nav-auth .me a')
-        .attr('href', '#/user/'+fbUser['id'])
+        .attr('href', '#/me')
         .text(fbUser['name']);
       $('.nav-auth .me-img img').attr('src', 'https://graph.facebook.com/'+fbUser['id']+'/picture');
     } else {
@@ -78,10 +96,9 @@ $(document).ready(function() {
   $('.login a').click(function() {
     FB.login(function(response) {
       if (response.authResponse) {
-        var access_token =   FB.getAuthResponse()['accessToken'];
         console.log('Welcome!  Fetching your information.... ');
         refreshCurrentUser(function() {
-          window.location.hash = '#/user/'+fbUser['id'];
+          window.location.hash = '#/me';
         });
       } else {
         console.log('User cancelled login or did not fully authorize.');
@@ -107,31 +124,53 @@ $(document).ready(function() {
 
   var theContent = $('#the-content');
   var userTpl = Handlebars.compile($('#user-template').html());
+  var friendTpl = Handlebars.compile($('#friend-template').html());
 
   Path
-    .map('#/user/:user_id')
+    .map('#/me')
     .to(function() {
       var user;
       if (fbUser && fbUser['id'] == this.params['user_id']) {
         user = fbUser;
-        theContent.html(userTpl({
-          activeDiscover: true,
-          user: fbUser
-        }));
+        renderDiscoverPage(fbUser);
       } else {
         FB.api('/'+this.params['user_id'], function(response) {
-          theContent.html(userTpl({
-          activeDiscover: true,
-            user: response
-          }));
+          //@todo check validity of response
+          renderDiscoverPage(response);
         });
       }
     });
 
+  function renderDiscoverPage(user) {
+    theContent.html(userTpl({
+      activeDiscover: true,
+      user: user
+    }));
+    goToServer('ajax/login', function(user) {
+      console.log(user);
+      $('.friends').html(friendTpl(user)).masonry({
+        // options
+        itemSelector : '.item'
+      });
+    });
+  }
+
   Path
-    .map('#/user/:user_id/artists')
+    .map('#/me/artists')
     .to(function() {
 
+    });
+
+  Path
+    .map('#/me/and/:user_id')
+    .to(function() {
+      FB.api('/'+this.params['user_id'], function(response) {
+        theContent.html(userTpl({
+          activeDiscover: true,
+          user: fbUser,
+          friend: response
+        }));
+      });
     });
 
   Path.map('#/').to(function() {
