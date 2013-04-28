@@ -41,7 +41,6 @@ def get_artist_events(request):
             art = Artist.objects.filter(name = name)[0]
         data = json.dumps(art.last_events)
         mimetype = 'application/json'
-        print data
         return HttpResponse(data, mimetype) 
 @cache_page(60 * 60)
 def get_artist_song(request):
