@@ -191,27 +191,31 @@ $(document).ready(function() {
 
     $("#search").catcomplete({
       source: function(req, add){
+        if (!friends && !pages) {
+          return;
+        }
         var suggestions = [];
         $.each(friends, function(i, user){
           if (user.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
-          suggestions.push({'value':user.name, 'category' : 'Friends'});}
+          suggestions.push({'value':user.name, 'id': user.uid, 'category' : 'Friends'});}
         });
         $.each(pages, function(i, page){
           if (page.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
-          suggestions.push({'value':page.name, 'category' : 'Artists'});}
+          suggestions.push({'value':page.name, 'id': page.id, 'category' : 'Artists'});}
         });
         add(suggestions);
       },
       select: function(e, ui){
-        var friend = ui.item.value,
-        span = $('<span class="autocomplete-added">').text(friend),
-        a = $("<a>").addClass("remove").attr({
-          href: "javascript:",
-          title: "Remove " + friend
-        }).text("x ").appendTo(span);
-        span.insertBefore("#search");
-        to_be_searched.push(ui.item);
-        console.log(to_be_searched);
+        // var friend = ui.item.value,
+        // span = $('<span class="autocomplete-added">').text(friend),
+        // a = $("<a>").addClass("remove").attr({
+        //   href: "javascript:",
+        //   title: "Remove " + friend
+        // }).text("x ").appendTo(span);
+        // span.insertBefore("#search");
+        // to_be_searched.push(ui.item);
+        // console.log(to_be_searched);
+        window.location.hash = '#/user/'+fbUser['id']+'/friend/'+ui.item.id;
       },
       change: function(){
         $("#search").val("").css("top",2);
