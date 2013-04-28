@@ -63,6 +63,7 @@ class Artist(ripple):
 	def GetSoundcloud(self):
 
 		for item in self.social_media:
+			print item
 			if item['type'] == 'soundcloud':
 				sc = soundcloud.Client(client_id = SOUNDCLOUD_CLIENT_ID)
 				self.soundcloud_url = item['target']
