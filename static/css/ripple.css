@@ -107,6 +107,13 @@ body {
   }
 }
 
+.autocomplete-added {
+  position: relative;
+  top: 7px;
+  color: white;
+  right: 2px;
+}
+
 .ui-autocomplete {
   position: absolute;
   top: 100%;

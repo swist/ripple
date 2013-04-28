@@ -204,11 +204,11 @@ $(document).ready(function() {
       },
       select: function(e, ui){
         var friend = ui.item.value,
-        span = $("<span>").text(friend),
+        span = $('<span class="autocomplete-added">').text(friend),
         a = $("<a>").addClass("remove").attr({
           href: "javascript:",
           title: "Remove " + friend
-        }).text("x").appendTo(span);
+        }).text("x ").appendTo(span);
         span.insertBefore("#search");
         to_be_searched.push(ui.item);
         console.log(to_be_searched);
