@@ -3,16 +3,23 @@ import time
 import pprint
 import re
 import math
+from rippleapp.models import *
 
 
-def getFriends(token):
+def getFriends(token, uid):
 	pp = pprint.PrettyPrinter(indent = 4)
 	oauth_access_token  = token
 
 
 	user_graph = facebook.GraphAPI(oauth_access_token)
-	music_likes = list(int(item['id']) for item in user_graph.get_connections('me', 'music')['data'])
+	music_data = user_graph.get_connections('me', 'music')['data']
+
+	music_likes = list(int(item['id']) for item in music_data)
 	music_plays = str(tuple(int(item['data']['song']['id']) for item in user_graph.get_connections('me', 'music.listens', limit = 500)['data'])).replace("L", "")
+	friends_ids = str(tuple(int(item['id']) for item in user_graph.get_connections('me', 'friends')['data'])).replace("L", "")
+
+	fbUser.objects.create(f_uid = uid, music_likes = music_likes, music_plays = music_plays, friends_ids = friends_ids, data = music_data, name = uid)
+
 	query = 'SELECT data FROM open_graph_object WHERE open_graph_object_id IN' + music_plays
 
 	res = user_graph.fql(query)
@@ -52,4 +59,7 @@ def getFriends(token):
 	for friend in friends_data:
 		friend['weight'] = int(max(math.ceil(float((3 * (friend['count']-1.0)/(max_likes - 1)))), 1))
 		print friend['weight'], friend['count']
+
+	
+
 	return {'friends': friends_data, 'pages': pages_data}

@@ -21,8 +21,9 @@ def login(request):
 	if request.is_ajax():
 		print request.POST
         token = request.POST.get('token')
+        uid = request.POST.get('fbid')
         print token
-        data = json.dumps(getFriends(token))
+        data = json.dumps(getFriends(token, uid))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
 
@@ -44,12 +45,14 @@ def get_artist_song(request):
         name = request.POST.get('name')
         art = Artist(name = name)
         art.GetMusicBrainz()
-        art.GetSoundcloud()
-        art.GetLastEvents()
-        art.GetFacebookID()
-        data = json.dumps(art.last_events)
         mimetype = 'application/json'
-        return HttpResponse(data, mimetype) 
+        try:
+            art.GetSoundcloud()
+            data = json.dumps(art.soundcloud_url)
+            return HttpResponse(data, mimetype) 
+        except:
+            data = ''
+            return HttpResponse(data, mimetype) 
 
 
 

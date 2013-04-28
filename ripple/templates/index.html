@@ -72,8 +72,6 @@
                   </p>
                   <ul class="nav nav-list usernav">
                     <li><h2 class="username">{{user.name}}</h2></li>
-                    <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
-                    <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
                   </ul>
                 </div>
 
@@ -94,8 +92,6 @@
                 </p>
                 <ul class="nav nav-list usernav">
                   <li><h2 class="username">{{user.name}}</h2></li>
-                  <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
-                  <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
                 </ul>
               </div>
               {{#if friend}}
