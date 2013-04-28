@@ -5,6 +5,9 @@ from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
 from ripple.settings import FB_KEY
 from fb_friends import getFriends
+
+from models import *
+
 import json
 import facebook
 import time
@@ -22,6 +25,32 @@ def login(request):
         data = json.dumps(getFriends(token))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
+
+def get_artist_events(request):
+    if request.is_ajax():
+        name = request.POST.get('name')
+        art = Artist(name = name)
+        art.GetMusicBrainz()
+        art.GetSoundcloud()
+        art.GetLastEvents()
+        art.GetFacebookID()
+        data = json.dumps(art.last_events)
+        mimetype = 'application/json'
+        return HttpResponse(data, mimetype) 
+
+def get_artist_song(request):
+    if request.is_ajax():
+        name = request.POST.get('name')
+        art = Artist(name = name)
+        art.GetMusicBrainz()
+        art.GetSoundcloud()
+        art.GetLastEvents()
+        art.GetFacebookID()
+        data = json.dumps(art.last_events)
+        mimetype = 'application/json'
+        return HttpResponse(data, mimetype) 
+
+
 
 # All this stuff to allow verbatim
 from django import template

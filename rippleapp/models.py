@@ -69,11 +69,17 @@ class Artist(ripple):
 
 	def GetLastEvents(self):
 		if self.musicbrainz_id:
-			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)	
+			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)['events']['event']
 		else:
 			self.GetMusicBrainz()
 			self.GetLastEvents()
 			return
+
+		for event in self.last_events:
+			event.pop('image')
+			event.pop('attendance')
+			event.pop('tickets')
+			event.pop('reviews')
 
 	def GetFacebookID(self):
 		if self.social_media:

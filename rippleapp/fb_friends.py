@@ -2,6 +2,7 @@ import facebook
 import time
 import pprint
 import re
+import math
 
 	
 def getFriends(token):
@@ -22,12 +23,21 @@ def getFriends(token):
 	friends = (result for result in query_results if result['name'] == 'friends').next()['fql_result_set']
 	pages_data = (result for result in query_results if result['name'] == 'pages_data').next()['fql_result_set']
 
+	max_likes = 0
 
 	for friend in friends_data:
 		likes = [like['page_id'] for like in friends if like['uid'] == friend['uid']]
+		friend['weight'] = len(likes)
+
+		if friend['weight'] > max_likes:
+			max_likes = friend['weight']
+
 		friend['likes'] = []
 		for like in likes:
 			entry = (result for result in pages_data if result['page_id'] == like).next()
 			friend['likes'].append(entry)
-
+	print max_likes
+	for friend in friends_data:
+		friend['weight'] = int(max(math.ceil(float((3 * (friend['weight']-1.0)/(max_likes - 1)))), 1))
+		print friend['weight']
 	return {'friends': friends_data, 'pages': pages_data}
