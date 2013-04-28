@@ -34,7 +34,7 @@
             <ul class="nav pull-right nav-auth">
               <li class="login"><a href="#">Log In Using Facebook</a></li>
               <li class="hide me-img"><img></li>
-              <li class="hide me"><a href="#"></a></li>
+              <li class="hide me"><a href="#/me"></a></li>
               <li class="hide logout"><a href="#">Log Out</a></li>
             </ul>
             <ul class="nav">
@@ -47,26 +47,33 @@
       </div>
     </div>
 
-    <header class="userinfo">
-      <div class="container-fluid text-center">
-        <img src="http://placehold.it/100x100" class="img-circle img-polaroid">
-        <h2>Jian Yuan</h2>
-      </div>
-    </header>
+    <div id="the-content"></div>
 
-    <div class="navbar navbar-inverse navbar-static-top">
-      <div class="navbar-inner">
-        <div class="container-fluid">
-          <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><a href="#">Explore Friends</a></li>
-              <li><a href="#">Artists</a></li>
-              <li><a href="#">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+    {% verbatim %}
+      <script id="user-template" type="text/x-handlebars-template">
+        <header class="userinfo">
+          <div class="container-fluid text-center">
+            <img src="http://placehold.it/100x100" class="img-circle img-polaroid">
+            <h2>{{name}}</h2>
+          </div>
+        </header>
+
+        <div class="navbar navbar-inverse navbar-static-top">
+          <div class="navbar-inner">
+            <div class="container-fluid">
+              <div class="nav-collapse collapse">
+                <ul class="nav">
+                  <li><a href="#user/{{id}}/friends">Explore Friends</a></li>
+                  <li><a href="#user/{{id}}">Artists</a></li>
+                  <li><a href="#user/{{id}}">Something else</a></li>
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </script>
+    {% endverbatim %}
+
     <div class="container-fluid">
       <div class="row-fluid">
       </div><!--/row-->
@@ -77,6 +84,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{% static "js/jquery-1.9.1.js" %}"></script>
     <script src="{% static "js/path.min.js" %}"></script>
+    <script src="{% static "js/handlebars.js" %}"></script>
     <!--
     <script src="js/bootstrap-transition.js"></script>
     <script src="js/bootstrap-alert.js"></script>
