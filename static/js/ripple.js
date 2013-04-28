@@ -74,18 +74,31 @@ $(document).ready(function() {
   var theContent = $('#the-content');
   var userTpl = Handlebars.compile($('#user-template').html());
 
-  Path.map('#/user/:user_id').to(function() {
-    console.log('looking at ' + this.params['user_id']);
-    var user;
-    if (fbUser && fbUser['id'] == this.params['user_id']) {
-      user = fbUser;
-      theContent.html(userTpl(fbUser));
-    } else {
-      FB.api('/'+this.params['user_id'], function(response) {
-        theContent.html(userTpl(response));
-      });
-    }
-  });
+  Path
+    .map('#/user/:user_id')
+    .to(function() {
+      var user;
+      if (fbUser && fbUser['id'] == this.params['user_id']) {
+        user = fbUser;
+        theContent.html(userTpl({
+          activeDiscover: true,
+          user: fbUser
+        }));
+      } else {
+        FB.api('/'+this.params['user_id'], function(response) {
+          theContent.html(userTpl({
+          activeDiscover: true,
+            user: response
+          }));
+        });
+      }
+    });
+
+  Path
+    .map('#/user/:user_id/artists')
+    .to(function() {
+
+    });
 
   Path.map('#/').to(function() {
     console.log('home page');

@@ -1,5 +1,5 @@
 body {
-  padding-top: 50px;
+  padding-top: 80px;
   padding-bottom: 40px;
 }
 .sidebar-nav {
@@ -9,7 +9,9 @@ body {
 .userinfo {
   background-color: #efefef;
   /*background: url(../img/bg/purty_wood.png);*/
-  padding: 20px 0;
+}
+.userinfo .nav {
+  font-size: 14px;
 }
 
 .usernavbar {

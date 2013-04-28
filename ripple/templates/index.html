@@ -51,23 +51,20 @@
 
     {% verbatim %}
       <script id="user-template" type="text/x-handlebars-template">
-        <header class="userinfo">
-          <div class="container-fluid text-center">
-            <img src="https://graph.facebook.com/{{id}}/picture?width=100&height=100" class="img-circle img-polaroid">
-            <h2>{{name}}</h2>
-          </div>
-        </header>
+        <div class="container">
+          <div class="row">
+            <div class="span2 userinfo">
+              <p class="text-center">
+                <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
+              </p>
+              <ul class="nav nav-list usernav">
+                <li><h2 class="username">{{user.first_name}}</h2></li>
+                <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
+                <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
+              </ul>
+            </div>
+            <div class="span10">
 
-        <div class="navbar navbar-inverse navbar-static-top">
-          <div class="navbar-inner">
-            <div class="container-fluid">
-              <div class="nav-collapse collapse">
-                <ul class="nav">
-                  <li><a href="#user/{{id}}/friends">Explore Friends</a></li>
-                  <li><a href="#user/{{id}}">Artists</a></li>
-                  <li><a href="#user/{{id}}">Something else</a></li>
-                </ul>
-              </div><!--/.nav-collapse -->
             </div>
           </div>
         </div>
