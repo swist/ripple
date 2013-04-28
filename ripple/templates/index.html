@@ -38,13 +38,8 @@
               <li class="hide me"><a href="#/me"></a></li>
               <li class="hide logout"><a href="#">Log Out</a></li>
             </ul>
-            <ul class="nav">
-              <li class="active"><a href="#/">Home</a></li>
-              <li><a href="#/about">About</a></li>
-            </ul>
             <form class="navbar-form pull-left">
-              <input type="text" id="search" class="span2">
-              <button type="submit" class="btn">Search</button>
+              <input type="text" id="search" class="span4" placeholder="Search for friends or artists">
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -121,7 +116,6 @@
                 <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Friend...</h1>
               {{/if}}
             {{/if}}
-
             {{#if activeArtist}}
               {{#if artist}}
                 <div class="span2 userinfo">
