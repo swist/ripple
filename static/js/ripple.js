@@ -7,7 +7,7 @@ Handlebars.registerHelper('friendPhotoSize', function(friend) {
 });
 
 $(document).ready(function() {
-  var fbUser, uid, accessToken, friends, pages, cachedData = {};
+  var fbUser, uid, accessToken, friends, pages, cachedData = {}, cachedArtists = {}, cachedSongs = {};
   $(window).bind('fbAsyncInit', function() {
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
@@ -162,11 +162,6 @@ $(document).ready(function() {
       });
     });
   }
-  Path
-    .map('#/user/:user_id/artists')
-    .to(function() {
-
-    });
 
   // function findFriendById(id, foundCb) {
   //   goToServer(function(response) {
@@ -215,6 +210,47 @@ $(document).ready(function() {
           fbUser = response;
           //@todo check validity of response
           renderComparePage(fbUser, _this.params['friend_id']);
+        });
+      }
+    });
+
+  function renderArtistPage(artist) {
+      theContent.html(userTpl({
+        activeArtist: true,
+        artist: artist
+      }));
+      $.post('ajax/artist_events', { name: artist.name }, function(events) {
+        for (var i = 0; i < events.length; i++) {
+          events[i].image = events[i].venue.image[2]['#text'];
+        }
+        console.log('got events', events);
+        theContent.html(userTpl({
+          activeArtist: true,
+          artist: artist,
+          eventsLoaded: true,
+          events: events
+        }));
+        // $.post('ajax/artist_songs', { name: artist.name }, function(songs) {
+        //   console.log('got songs', songs);
+        // });
+      });
+  }
+  Path
+    .map('#/artist/:artist_id')
+    .to(function() {
+      var artist_id = this.params['artist_id'];
+      console.log('getting ', artist_id);
+      theContent.html(userTpl({
+        activeArtist: true
+      }));
+      if (cachedArtists[artist_id]) {
+        renderArtistPage(cachedArtists[artist_id]);
+      } else {
+        FB.api('/'+artist_id, function(response) {
+          console.log(response);
+          cachedArtists[artist_id] = response;
+          //@todo check validity of response
+          renderArtistPage(response);
         });
       }
     });

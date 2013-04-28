@@ -36,6 +36,7 @@ def get_artist_events(request):
         art.GetFacebookID()
         data = json.dumps(art.last_events)
         mimetype = 'application/json'
+        print data
         return HttpResponse(data, mimetype) 
 
 def get_artist_song(request):

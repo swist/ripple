@@ -54,7 +54,7 @@ class Artist(ripple):
 		# for result in results:
 		# 	if int(result['ext:score']) > 75:
 		# 		break
-		print result
+		#print result
 		self.musicbrainz_id = result['id']
 		self.tags = result['tag-list']
 		self.mbrainz_cache = mbrainz.get_artist_by_id(self.musicbrainz_id, ['artist-rels', 'url-rels'])['artist']
@@ -63,23 +63,31 @@ class Artist(ripple):
 
 	def GetSoundcloud(self):
 
-		sc = soundcloud.Client(client_id = SOUNDCLOUD_CLIENT_ID)
-		url = (item for item in self.social_media if item['type'] == 'soundcloud').next()['target']
-		self.soundcloud_id = sc.get('/resolve', url = url).id
+		for item in self.social_media:
+			if item['type'] == 'soundcloud':
+				sc = soundcloud.Client(client_id = SOUNDCLOUD_CLIENT_ID)
+				self.soundcloud_id = sc.get('/resolve', url = item['target']).id
+				break
+		# url = (item for item in self.social_media if item['type'] == 'soundcloud').next()['target']
+				# self.soundcloud_id = sc.get('/resolve', url = url).id
 
 	def GetLastEvents(self):
-		if self.musicbrainz_id:
-			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)['events']['event']
-		else:
+		if not self.musicbrainz_id:
 			self.GetMusicBrainz()
-			self.GetLastEvents()
-			return
 
-		for event in self.last_events:
-			event.pop('image')
-			event.pop('attendance')
-			event.pop('tickets')
-			event.pop('reviews')
+		print getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)
+
+		try:
+			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)['events']['event']
+			if type(self.last_events) != list:
+				self.last_events = [self.last_events]
+			for event in self.last_events:
+				event.pop('image')
+				event.pop('attendance')
+				event.pop('tickets')
+				event.pop('reviews')
+		except KeyError:
+			self.last_events = {}
 
 	def GetFacebookID(self):
 		if self.social_media:

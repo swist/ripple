@@ -57,49 +57,92 @@
       <script id="user-template" type="text/x-handlebars-template">
         <div class="container">
           <div class="row">
-            <div class="span2 userinfo">
-              <p class="text-center">
-                <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
-              </p>
-              <ul class="nav nav-list usernav">
-                <li><h2 class="username">{{user.name}}</h2></li>
-                <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
-                <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
-              </ul>
-            </div>
-            {{#if activeFriend}}
-              {{#if friend}}
-                <div class="span2 userinfo friendinfo">
-                  <p class="text-center">
-                    <img src="https://graph.facebook.com/{{friend.uid}}/picture?width=170&height=170">
-                  </p>
-                  <ul class="nav nav-list usernav">
-                    <li><h2 class="username">{{friend.name}}</h2></li>  
-                    <li><a href="https://www.facebook.com/{{user.uid}}"><i class="icon-facebook"></i> Profile</a></li>
-                  </ul>
-                  <u class="icon-plus large-plus"></u>
-                </div>
-                <div class="span8">
-                  {{#each friend.likes}}
-                    <div class="well artist-item">
-                      <h3>
-                        <a href="#/artist/{{this.page_id}}">
-                          <img src="https://graph.facebook.com/{{this.page_id}}/picture?width=60&height=60" width="60" height="60" class="pull-left">
-                          {{this.name}}
-                        </a>
-                      </h3>
-                    </div>
-                  {{/each}}
-                </div>
-              {{else}}
-                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
-              {{/if}}
-            {{else}}
-              <div class="span10">
-                <div class="friends">
-                  <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
-                </div>
+            {{#if user}}
+              <div class="span2 userinfo">
+                <p class="text-center">
+                  <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
+                </p>
+                <ul class="nav nav-list usernav">
+                  <li><h2 class="username">{{user.name}}</h2></li>
+                  <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
+                  <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
+                </ul>
               </div>
+            {{/if}}
+            {{#if activeFriend}}
+              <div class="span2 userinfo friendinfo">
+                <p class="text-center">
+                  <img src="https://graph.facebook.com/{{friend.uid}}/picture?width=170&height=170">
+                </p>
+                <ul class="nav nav-list usernav">
+                  <li><h2 class="username">{{friend.name}}</h2></li>  
+                  <li><a href="https://www.facebook.com/{{friend.uid}}"><i class="icon-facebook"></i> Profile</a></li>
+                </ul>
+                <u class="icon-plus large-plus"></u>
+              </div>
+              <div class="span8">
+                {{#each friend.likes}}
+                  <div class="well artist-item">
+                    <h3>
+                      <a href="#/artist/{{this.page_id}}">
+                        <img src="https://graph.facebook.com/{{this.page_id}}/picture?width=60&height=60" width="60" height="60" class="pull-left">
+                        {{this.name}}
+                      </a>
+                    </h3>
+                  </div>
+                {{/each}}
+              </div>
+            {{else}}
+              {{#if activeArtist}}
+                {{#if artist}}
+                  <div class="span2 userinfo">
+                    <p class="text-center">
+                      <img src="https://graph.facebook.com/{{artist.id}}/picture?width=170&height=170">
+                    </p>
+                    <ul class="nav nav-list usernav">
+                      <li><h2 class="username">{{artist.name}}</h2></li>  
+                      <li><a href="https://www.facebook.com/{{artist.id}}"><i class="icon-facebook"></i> Profile</a></li>
+                    </ul>
+                  </div>
+                  <div class="span5">
+                    <h3>Events</h3>
+                    {{#if eventsLoaded}}
+                      {{#each events}}
+                        <div class="well event-item">
+                          {{#if this.image}}
+                            <img src="{{this.image}}" width="60" height="60" class="pull-left">
+                          {{/if}}
+                          <h4><a href="{{this.url}}">{{this.title}}</a></h4>
+                          <p>
+                            <i class="icon-calendar"></i> dates<br>
+                            <i class="icon-map-marker"></i> {{this.venue.name}}
+                          </p>
+                        </div>
+                      {{else}}
+                        <p>No events.</p>
+                      {{/each}}
+                    {{else}}
+                      <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Events...</h3>
+                    {{/if}}
+                  </div>
+                  <div class="span5">
+                    <h3>Songs</h3>
+                    {{#if songsLoaded}}
+
+                    {{else}}
+                      <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Songs...</h3>
+                    {{/if}}
+                  </div>
+                {{else}}
+                  <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Artist...</h1>
+                {{/if}}
+              {{else}}
+                <div class="span10">
+                  <div class="friends">
+                    <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                  </div>
+                </div>
+              {{/if}}
             {{/if}}
           </div>
         </div>
