@@ -5,6 +5,14 @@ Handlebars.registerHelper('friendPhoto', function(friend) {
 Handlebars.registerHelper('friendPhotoSize', function(friend) {
   return 78 * Math.pow(2, friend['weight']);
 });
+Handlebars.registerHelper('momentCalendar', function(datetime) {
+  return moment(datetime).calendar();
+});
+Handlebars.registerHelper('renderArtistLinks', function(artist) {
+                      <li><a href="https://www.facebook.com/{{artist.id}}"><i class="icon-facebook"></i> Profile</a></li>
+  console.log(artist);
+  return links;
+})
 
 $(document).ready(function() {
   var fbUser, uid, accessToken, friends, pages, cachedData = {}, cachedArtists = {}, cachedSongs = {};
@@ -100,7 +108,7 @@ $(document).ready(function() {
     }
   }
 
-  $('.login a').click(function() {
+  function loginFacebook() {
     FB.login(function(response) {
       if (response.authResponse) {
         console.log('Welcome!  Fetching your information.... ');
@@ -110,7 +118,11 @@ $(document).ready(function() {
       } else {
         console.log('User cancelled login or did not fully authorize.');
       }
-    }, {scope: 'email,user_actions.music,user_events,user_interests,user_hometown,user_location,user_likes,user_videos,user_interests,user_actions.video,friends_about_me,friends_actions.music,friends_likes,friends_location,friends_hometown,friends_status'});
+    }, {scope: 'email,user_actions.music,user_events,user_interests,user_hometown,user_location,user_likes,user_videos,user_interests,user_actions.video,friends_about_me,friends_actions.music,friends_likes,friends_location,friends_hometown,friends_status'});    
+  }
+  $('.login a').click(function() {
+    loginFacebook();
+    return false;
   });
 
   $('.logout a').click(function() {
@@ -132,6 +144,10 @@ $(document).ready(function() {
   var theContent = $('#the-content');
   var userTpl = Handlebars.compile($('#user-template').html());
   var friendTpl = Handlebars.compile($('#friend-template').html());
+  var eventTpl = Handlebars.compile($('#event-template').html());
+  var homeTpl = Handlebars.compile($('#main-page').html());
+  // var songTpl = Handlebars.compile($('#song-template').html());
+
 
   Path
     .map('#/user/:user_id')
@@ -210,7 +226,6 @@ $(document).ready(function() {
   }
   function renderComparePage(user, friend_id) {
     theContent.html(userTpl({
-      activeDiscover: true,
       activeFriend: true,
       user: user
     }));
@@ -219,7 +234,6 @@ $(document).ready(function() {
       pages = response.pages;
       response.user = user;
       theContent.html(userTpl({
-        activeDiscover: true,
         activeFriend: true,
         user: user,
         friend: getFriendById(friend_id)
@@ -251,16 +265,20 @@ $(document).ready(function() {
           events[i].image = events[i].venue.image[2]['#text'];
         }
         console.log('got events', events);
-        theContent.html(userTpl({
-          activeArtist: true,
-          artist: artist,
-          eventsLoaded: true,
+        $('#artist-events').html(eventTpl({
           events: events
         }));
-        // $.post('ajax/artist_songs', { name: artist.name }, function(songs) {
-        //   console.log('got songs', songs);
-        // });
+        // theContent.html(userTpl({
+        //   activeArtist: true,
+        //   artist: artist,
+        //   eventsLoaded: true,
+        //   events: events
+        // }));
       });
+
+      // $.post('ajax/artist_songs', { name: artist.name }, function(songs) {
+      //   console.log('got songs', songs);
+      // });
   }
   Path
     .map('#/artist/:artist_id')
@@ -282,8 +300,16 @@ $(document).ready(function() {
       }
     });
 
+  Path.map('#/login')
+    .to(function() {
+      loginFacebook();
+    });
+
   Path.map('#/').to(function() {
-    console.log('home page');
+    theContent.html(homeTpl());
+    $.okvideo({ source: '64964937' });
+  }).exit(function() {
+    $('#okplayer').remove();
   });
 
   Path.rescue(notFound);

@@ -81,11 +81,11 @@ class Artist(ripple):
 			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)['events']['event']
 			if type(self.last_events) != list:
 				self.last_events = [self.last_events]
-			for event in self.last_events:
-				event.pop('image')
-				event.pop('attendance')
-				event.pop('tickets')
-				event.pop('reviews')
+			# for event in self.last_events:
+			# 	event.pop('image')
+			# 	event.pop('attendance')
+			# 	event.pop('tickets')
+			# 	event.pop('reviews')
 		except KeyError:
 			self.last_events = {}
 

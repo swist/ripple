@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>ripple</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -30,18 +30,17 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#"><i class="icon-music"></i> ripple</a>
+          <a class="brand" href="#/"><i class="icon-music"></i> ripple</a>
           <div class="nav-collapse collapse">
             <ul class="nav pull-right nav-auth">
-              <li class="login"><a href="#">Log In Using Facebook</a></li>
+              <li class="login"><a href="#/login">Log In Using Facebook</a></li>
               <li class="hide me-img"><img></li>
               <li class="hide me"><a href="#/me"></a></li>
               <li class="hide logout"><a href="#">Log Out</a></li>
             </ul>
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li class="active"><a href="#/">Home</a></li>
+              <li><a href="#/about">About</a></li>
             </ul>
             <form class="navbar-form pull-left">
               <input type="text" id="search" class="span2">
@@ -54,10 +53,41 @@
     <div id="the-content"></div>
 
     {% verbatim %}
+      <script id="main-page" type="text/x-handlebars-template">
+        <div class="container">
+          <div class="text-center welcome">
+            <h1>Tagline Here</h1>
+            <a href="#/login" class="btn btn-large btn-success">Connect With Facebook</a>
+          </div>
+        </div>
+      </script>
       <script id="user-template" type="text/x-handlebars-template">
         <div class="container">
           <div class="row">
-            {{#if user}}
+            {{#if activeDiscover}}
+              {{#if user}}
+                <div class="span2 userinfo">
+                  <p class="text-center">
+                    <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
+                  </p>
+                  <ul class="nav nav-list usernav">
+                    <li><h2 class="username">{{user.name}}</h2></li>
+                    <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
+                    <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
+                  </ul>
+                </div>
+
+                <div class="span10">
+                  <div class="friends">
+                    <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                  </div>
+                </div>
+              {{else}}
+                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading User...</h1>
+              {{/if}}
+            {{/if}}
+
+            {{#if activeFriend}}
               <div class="span2 userinfo">
                 <p class="text-center">
                   <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
@@ -68,80 +98,59 @@
                   <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
                 </ul>
               </div>
-            {{/if}}
-            {{#if activeFriend}}
-              <div class="span2 userinfo friendinfo">
-                <p class="text-center">
-                  <img src="https://graph.facebook.com/{{friend.uid}}/picture?width=170&height=170">
-                </p>
-                <ul class="nav nav-list usernav">
-                  <li><h2 class="username">{{friend.name}}</h2></li>  
-                  <li><a href="https://www.facebook.com/{{friend.uid}}"><i class="icon-facebook"></i> Profile</a></li>
-                </ul>
-                <u class="icon-plus large-plus"></u>
-              </div>
-              <div class="span8">
-                {{#each friend.likes}}
-                  <div class="well artist-item">
-                    <h3>
-                      <a href="#/artist/{{this.page_id}}">
-                        <img src="https://graph.facebook.com/{{this.page_id}}/picture?width=60&height=60" width="60" height="60" class="pull-left">
-                        {{this.name}}
-                      </a>
-                    </h3>
-                  </div>
-                {{/each}}
-              </div>
-            {{else}}
-              {{#if activeArtist}}
-                {{#if artist}}
-                  <div class="span2 userinfo">
-                    <p class="text-center">
-                      <img src="https://graph.facebook.com/{{artist.id}}/picture?width=170&height=170">
-                    </p>
-                    <ul class="nav nav-list usernav">
-                      <li><h2 class="username">{{artist.name}}</h2></li>  
-                      <li><a href="https://www.facebook.com/{{artist.id}}"><i class="icon-facebook"></i> Profile</a></li>
-                    </ul>
-                  </div>
-                  <div class="span5">
-                    <h3>Events</h3>
-                    {{#if eventsLoaded}}
-                      {{#each events}}
-                        <div class="well event-item">
-                          {{#if this.image}}
-                            <img src="{{this.image}}" width="60" height="60" class="pull-left">
-                          {{/if}}
-                          <h4><a href="{{this.url}}">{{this.title}}</a></h4>
-                          <p>
-                            <i class="icon-calendar"></i> dates<br>
-                            <i class="icon-map-marker"></i> {{this.venue.name}}
-                          </p>
-                        </div>
-                      {{else}}
-                        <p>No events.</p>
-                      {{/each}}
-                    {{else}}
-                      <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Events...</h3>
-                    {{/if}}
-                  </div>
-                  <div class="span5">
-                    <h3>Songs</h3>
-                    {{#if songsLoaded}}
-
-                    {{else}}
-                      <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Songs...</h3>
-                    {{/if}}
-                  </div>
-                {{else}}
-                  <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Artist...</h1>
-                {{/if}}
+              {{#if friend}}
+                <div class="span2 userinfo friendinfo">
+                  <p class="text-center">
+                    <img src="https://graph.facebook.com/{{friend.uid}}/picture?width=170&height=170">
+                  </p>
+                  <ul class="nav nav-list usernav">
+                    <li><h2 class="username">{{friend.name}}</h2></li>  
+                    <li><a href="https://www.facebook.com/{{friend.uid}}"><i class="icon-facebook"></i> Profile</a></li>
+                  </ul>
+                  <u class="icon-plus large-plus"></u>
+                </div>
+                <div class="span8">
+                  {{#each friend.likes}}
+                    <div class="well artist-item">
+                      <h3>
+                        <a href="#/artist/{{this.page_id}}">
+                          <img src="https://graph.facebook.com/{{this.page_id}}/picture?width=60&height=60" width="60" height="60" class="pull-left">
+                          {{this.name}}
+                        </a>
+                      </h3>
+                    </div>
+                  {{/each}}
+                </div>
               {{else}}
-                <div class="span10">
-                  <div class="friends">
-                    <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Friend...</h1>
+              {{/if}}
+            {{/if}}
+
+            {{#if activeArtist}}
+              {{#if artist}}
+                <div class="span2 userinfo">
+                  <p class="text-center">
+                    <img src="https://graph.facebook.com/{{artist.id}}/picture?width=170&height=170">
+                  </p>
+                  <ul class="nav nav-list usernav">
+                    <li><h2 class="username">{{artist.name}}</h2></li>
+                    {{renderArtistLinks artist}}
+                  </ul>
+                </div>
+                <div class="span5">
+                  <h3>Events</h3>
+                  <div id="artist-events">
+                    <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Events...</h3>
                   </div>
                 </div>
+                <div class="span5">
+                  <h3>Songs</h3>
+                  <div id="artist-songs">
+                    <h3 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Songs...</h3>
+                  </div>
+                </div>
+              {{else}}
+                <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Loading Artist...</h1>
               {{/if}}
             {{/if}}
           </div>
@@ -156,6 +165,24 @@
           </a>
         {{/each}}
       </script>
+      <script id="event-template" type="text/x-handlebars-template">
+        {{#each events}}
+          <div class="well event-item">
+            {{#if this.image}}
+              <div class="pull-right">
+                <img src="{{this.image}}" width="60" height="60">
+              </div>
+            {{/if}}
+            <h4><a href="{{this.url}}">{{this.title}}</a></h4>
+            <p>
+              <i class="icon-calendar"></i> {{this.startTime}}, {{this.startDate}}<br>
+              <i class="icon-map-marker"></i> {{this.venue.name}}
+            </p>
+          </div>
+        {{else}}
+          <p>No events.</p>
+        {{/each}}
+      </script>
     {% endverbatim %}
 
     <div class="container-fluid">
@@ -168,9 +195,11 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{% static "js/jquery-1.9.1.js" %}"></script>
     <script src="{% static "js/path.min.js" %}"></script>
+    <script src="{% static "js/moment.min.js" %}"></script>
     <script src="{% static "js/handlebars.js" %}"></script>
     <script src="{% static "js/jquery.masonry.min.js" %}"></script>
     <script src="{% static "js/jquery-ui.js" %}"></script>
+    <script src="{% static "js/okvideo.js" %}"></script>
 
     <!--
     <script src="js/bootstrap-transition.js"></script>
