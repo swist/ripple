@@ -27,10 +27,10 @@ def getFriends(token):
 
 	for friend in friends_data:
 		likes = [like['page_id'] for like in friends if like['uid'] == friend['uid']]
-		friend['weight'] = len(likes)
+		friend['count'] = len(likes)
 
-		if friend['weight'] > max_likes:
-			max_likes = friend['weight']
+		if friend['count'] > max_likes:
+			max_likes = friend['count']
 
 		friend['likes'] = []
 		for like in likes:
@@ -38,6 +38,6 @@ def getFriends(token):
 			friend['likes'].append(entry)
 	print max_likes
 	for friend in friends_data:
-		friend['weight'] = int(max(math.ceil(float((3 * (friend['weight']-1.0)/(max_likes - 1)))), 1))
-		print friend['weight']
+		friend['weight'] = int(max(math.ceil(float((3 * (friend['count']-1.0)/(max_likes - 1)))), 1))
+		print friend['weight'], friend['count']
 	return {'friends': friends_data, 'pages': pages_data}
