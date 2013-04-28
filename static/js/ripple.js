@@ -18,6 +18,7 @@ $(document).ready(function() {
         // and signed request each expire
         var uid = response.authResponse.userID;
         var accessToken = response.authResponse.accessToken;
+        goToServer(uid, accessToken)
         refreshCurrentUser();
       } else if (response.status === 'not_authorized') {
         // the user is logged in to Facebook, 
@@ -28,6 +29,37 @@ $(document).ready(function() {
      });
     Path.listen();
   });
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+  
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+  $.ajaxSetup({
+    crossDomain: false, // obviates need for sameOrigin test
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    }
+  });
+  function goToServer(id, token){
+    $.ajax({type:'POST', url:'ajax/login', data: { fbid: id, token: token }});
+  }
   function refreshCurrentUser(successCb) {
     FB.api('/me', function(response) {
       fbUser = response;
@@ -54,6 +86,7 @@ $(document).ready(function() {
   $('.login a').click(function() {
     FB.login(function(response) {
       if (response.authResponse) {
+        var access_token =   FB.getAuthResponse()['accessToken'];
         console.log('Welcome!  Fetching your information.... ');
         refreshCurrentUser(function() {
           window.location.hash = '#/user/'+fbUser['id'];
@@ -63,6 +96,7 @@ $(document).ready(function() {
       }
     }, {scope: 'email,user_actions.music,user_events,user_interests,user_hometown,user_location,user_likes,user_videos,user_interests,user_actions.video,friends_about_me,friends_actions.music,friends_likes,friends_location,friends_hometown,friends_status'});
   });
+
   $('.logout a').click(function() {
     FB.logout(function(response) {
       fbUser = undefined;

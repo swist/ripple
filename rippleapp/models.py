@@ -75,7 +75,6 @@ class Artist(ripple):
 			self.GetLastEvents()
 			return
 
-
 	def GetFacebookID(self):
 		if self.social_media:
 			graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
@@ -92,16 +91,16 @@ class Event(ripple):
 
 
 
-class fbUser(User):
-	user = models.OneToOneField(User, related_name = 'fb_data')
-	f_name = models.CharField(max_length=50, unique=True, db_index=True)
+class fbUser(ripple):
+	f_token = models.CharField(max_length=50, unique=True, db_index=True)
+	f_token_date = models.DateTimeField(auto_now = True)
 	f_id = models.CharField(max_length=50, unique=True, db_index=True)
 	f_location_id = models.CharField(max_length=80)
 
 	music_likes = PickledObjectField()
 	music_plays = PickledObjectField()
 
-	friends = PickledObjectField()
+	friends_ids = PickledObjectField()
 
 
 
