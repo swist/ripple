@@ -3,13 +3,31 @@ from picklefield.fields import PickledObjectField
 from django.contrib.auth.models import User
 from freebase import getFreebaseThing
 
-# Create your models here.
+import facebook
+import soundcloud 
+import musicbrainzngs as mbrainz
+import requests
 
+# Create your models here.
+SOUNDCLOUD_CLIENT_ID  = 'b61d4560984dc7c38d3fc0fcb123cffc'
+SOUNDCLOUD_CLIENT_SECRET = '271f398a01752aa7e5d4b6dbcfd8f87f'
+
+
+def getLastFM(method, query):
+
+	baseURL = "http://ws.audioscrobbler.com/2.0/?method="
+	api_key = "&api_key=8717be831cfce83e52144bf79ff1c942&format=json"
+	api_secret = '37f4a5667d5b106784a1f0e37a628249'
+	r = requests.get(baseURL+method+query+api_key)
+	if r.status_code != 200:
+		return None
+	return r.json()
 
 
 class ripple(models.Model):
 
 	name = models.CharField(max_length = 256)
+	tags = PickledObjectField(default = None)
 
 	class Meta:
 		abstract = True
@@ -24,7 +42,49 @@ class Artist(ripple):
 	soundcloud_id = models.CharField(max_length = 256)
 	fb_like_id = models.CharField(max_length = 256)
 	fb_page_id = models.CharField(max_length = 256)
+	social_media = PickledObjectField()
+	last_events = PickledObjectField()
+	aliases = PickledObjectField()
+	mbrainz_cache = PickledObjectField()
 	events = models.ManyToManyField('Event', related_name = 'artists')
+
+	def GetMusicBrainz(self):
+		mbrainz.set_useragent("Example music app", "0.1", "http://example.com/music")
+		result = mbrainz.search_artists(self.name)['artist-list'][0]
+		# for result in results:
+		# 	if int(result['ext:score']) > 75:
+		# 		break
+		print result
+		self.musicbrainz_id = result['id']
+		self.tags = result['tag-list']
+		self.mbrainz_cache = mbrainz.get_artist_by_id(self.musicbrainz_id, ['artist-rels', 'url-rels'])['artist']
+		self.social_media = self.mbrainz_cache.pop('url-relation-list')
+		self.aliases = self.mbrainz_cache.pop('artist-relation-list')
+
+	def GetSoundcloud(self):
+
+		sc = soundcloud.Client(client_id = SOUNDCLOUD_CLIENT_ID)
+		url = (item for item in self.social_media if item['type'] == 'soundcloud').next()['target']
+		self.soundcloud_id = sc.get('/resolve', url = url).id
+
+	def GetLastEvents(self):
+		if self.musicbrainz_id:
+			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)	
+		else:
+			self.GetMusicBrainz()
+			self.GetLastEvents()
+			return
+
+
+	def GetFacebookID(self):
+		if self.social_media:
+			graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
+			print graph_url
+			self.fb_page_id = requests.get(graph_url).json()
+			print self.fb_page_id
+		else:
+			self.GetMusicBrainz()
+			self.GetFacebookID()
 
 class Event(ripple):
 	lastfm_id = models.CharField(max_length = 256)
@@ -36,8 +96,16 @@ class fbUser(User):
 	user = models.OneToOneField(User, related_name = 'fb_data')
 	f_name = models.CharField(max_length=50, unique=True, db_index=True)
 	f_id = models.CharField(max_length=50, unique=True, db_index=True)
+	f_location_id = models.CharField(max_length=80)
 
-	location = models.CharField(max_length=80)
+	music_likes = PickledObjectField()
+	music_plays = PickledObjectField()
+
+	friends = PickledObjectField()
+
+
+
+
 
 
 
