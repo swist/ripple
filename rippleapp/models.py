@@ -81,6 +81,7 @@ class Artist(ripple):
 			self.last_events = getLastFM('artist.getevents', '&mbid='+self.musicbrainz_id)['events']['event']
 			if type(self.last_events) != list:
 				self.last_events = [self.last_events]
+
 			for event in self.last_events:
 				event.pop('image')
 				event.pop('attendance')
