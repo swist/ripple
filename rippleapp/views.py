@@ -2,6 +2,10 @@
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from ripple.settings import FB_KEY
+import facebook
+import time
+import pprint
+import re
 
 def index(request):
 	return HttpResponse(render_to_string('index.html', {'FB_ID':FB_KEY}))
