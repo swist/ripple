@@ -21,8 +21,9 @@ def login(request):
 	if request.is_ajax():
 		print request.POST
         token = request.POST.get('token')
+        uid = request.POST.get('fbid')
         print token
-        data = json.dumps(getFriends(token))
+        data = json.dumps(getFriends(token, uid))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
 
@@ -36,6 +37,7 @@ def get_artist_events(request):
         art.GetFacebookID()
         data = json.dumps(art.last_events)
         mimetype = 'application/json'
+        print data
         return HttpResponse(data, mimetype) 
 
 def get_artist_song(request):

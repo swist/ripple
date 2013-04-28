@@ -7,7 +7,7 @@ Handlebars.registerHelper('friendPhotoSize', function(friend) {
 });
 
 $(document).ready(function() {
-  var fbUser, uid, accessToken, friends, pages, cachedData = {};
+  var fbUser, uid, accessToken, friends, pages, cachedData = {}, cachedArtists = {}, cachedSongs = {};
   $(window).bind('fbAsyncInit', function() {
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
@@ -162,11 +162,6 @@ $(document).ready(function() {
       });
     });
   }
-  Path
-    .map('#/user/:user_id/artists')
-    .to(function() {
-
-    });
 
   // function findFriendById(id, foundCb) {
   //   goToServer(function(response) {
@@ -178,17 +173,33 @@ $(document).ready(function() {
   //     }
   //   });
   // }
+    $.widget( "custom.catcomplete", $.ui.autocomplete, {
+    _renderMenu: function( ul, items ) {
+      var that = this,
+        currentCategory = "";
+      $.each( items, function( index, item ) {
+        if ( item.category != currentCategory ) {
+          ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+          currentCategory = item.category;
+        }
+        that._renderItemData( ul, item );
+      });
+    }
+  });
 
-    $("#search").autocomplete({
+    var to_be_searched = []
+
+    $("#search").catcomplete({
       source: function(req, add){
         var suggestions = [];
-        console.log(friends);
         $.each(friends, function(i, user){
           if (user.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
-          suggestions.push(user.name);}
+          suggestions.push({'value':user.name, 'category' : 'Friends'});}
         });
-        console.log(suggestions);
-        console.log(pages);
+        $.each(pages, function(i, page){
+          if (page.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
+          suggestions.push({'value':page.name, 'category' : 'Artists'});}
+        });
         add(suggestions);
       },
       select: function(e, ui){
@@ -199,11 +210,24 @@ $(document).ready(function() {
           title: "Remove " + friend
         }).text("x").appendTo(span);
         span.insertBefore("#search");
+        to_be_searched.push(ui.item);
+        console.log(to_be_searched);
       },
       change: function(){
         $("#search").val("").css("top",2);
       }
     });
+
+  //add click handler to friends div
+          
+  //add live handler for clicks on remove links
+  $(document).on("click", ".remove", function(){
+    $(this).parent().remove();
+    if($("#friends span").length === 0) {
+      $("#to").css("top", 0);
+    }       
+  });
+
 
   function getFriendById(id) {
     for (var i = 0; i < friends.length; i++) {
@@ -242,6 +266,47 @@ $(document).ready(function() {
           fbUser = response;
           //@todo check validity of response
           renderComparePage(fbUser, _this.params['friend_id']);
+        });
+      }
+    });
+
+  function renderArtistPage(artist) {
+      theContent.html(userTpl({
+        activeArtist: true,
+        artist: artist
+      }));
+      $.post('ajax/artist_events', { name: artist.name }, function(events) {
+        for (var i = 0; i < events.length; i++) {
+          events[i].image = events[i].venue.image[2]['#text'];
+        }
+        console.log('got events', events);
+        theContent.html(userTpl({
+          activeArtist: true,
+          artist: artist,
+          eventsLoaded: true,
+          events: events
+        }));
+        // $.post('ajax/artist_songs', { name: artist.name }, function(songs) {
+        //   console.log('got songs', songs);
+        // });
+      });
+  }
+  Path
+    .map('#/artist/:artist_id')
+    .to(function() {
+      var artist_id = this.params['artist_id'];
+      console.log('getting ', artist_id);
+      theContent.html(userTpl({
+        activeArtist: true
+      }));
+      if (cachedArtists[artist_id]) {
+        renderArtistPage(cachedArtists[artist_id]);
+      } else {
+        FB.api('/'+artist_id, function(response) {
+          console.log(response);
+          cachedArtists[artist_id] = response;
+          //@todo check validity of response
+          renderArtistPage(response);
         });
       }
     });

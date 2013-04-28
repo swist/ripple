@@ -12,37 +12,46 @@ class Migration(SchemaMigration):
         db.create_table(u'rippleapp_artist', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('data', self.gf('picklefield.fields.PickledObjectField')(default=None)),
             ('musicbrainz_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('lastfm_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('soundcloud_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('fb_like_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
             ('fb_page_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('social_media', self.gf('picklefield.fields.PickledObjectField')()),
+            ('last_events', self.gf('picklefield.fields.PickledObjectField')()),
+            ('aliases', self.gf('picklefield.fields.PickledObjectField')()),
+            ('mbrainz_cache', self.gf('picklefield.fields.PickledObjectField')()),
         ))
         db.send_create_signal(u'rippleapp', ['Artist'])
-
-        # Adding M2M table for field events on 'Artist'
-        db.create_table(u'rippleapp_artist_events', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('artist', models.ForeignKey(orm[u'rippleapp.artist'], null=False)),
-            ('event', models.ForeignKey(orm[u'rippleapp.event'], null=False))
-        ))
-        db.create_unique(u'rippleapp_artist_events', ['artist_id', 'event_id'])
 
         # Adding model 'Event'
         db.create_table(u'rippleapp_event', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('data', self.gf('picklefield.fields.PickledObjectField')(default=None)),
             ('lastfm_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('fb_id', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('fb_id', self.gf('django.db.models.fields.CharField')(max_length=256, null=True, blank=True)),
         ))
         db.send_create_signal(u'rippleapp', ['Event'])
 
+        # Adding M2M table for field artists on 'Event'
+        db.create_table(u'rippleapp_event_artists', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('event', models.ForeignKey(orm[u'rippleapp.event'], null=False)),
+            ('artist', models.ForeignKey(orm[u'rippleapp.artist'], null=False))
+        ))
+        db.create_unique(u'rippleapp_event_artists', ['event_id', 'artist_id'])
+
         # Adding model 'fbUser'
         db.create_table(u'rippleapp_fbuser', (
-            ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='fb_data', unique=True, primary_key=True, to=orm['auth.User'])),
-            ('f_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=50, db_index=True)),
-            ('f_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=50, db_index=True)),
-            ('location', self.gf('django.db.models.fields.CharField')(max_length=80)),
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=256)),
+            ('data', self.gf('picklefield.fields.PickledObjectField')(default=None)),
+            ('f_uid', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
+            ('music_likes', self.gf('picklefield.fields.PickledObjectField')()),
+            ('music_plays', self.gf('picklefield.fields.PickledObjectField')()),
+            ('friends_ids', self.gf('picklefield.fields.PickledObjectField')()),
         ))
         db.send_create_signal(u'rippleapp', ['fbUser'])
 
@@ -51,77 +60,50 @@ class Migration(SchemaMigration):
         # Deleting model 'Artist'
         db.delete_table(u'rippleapp_artist')
 
-        # Removing M2M table for field events on 'Artist'
-        db.delete_table('rippleapp_artist_events')
-
         # Deleting model 'Event'
         db.delete_table(u'rippleapp_event')
+
+        # Removing M2M table for field artists on 'Event'
+        db.delete_table('rippleapp_event_artists')
 
         # Deleting model 'fbUser'
         db.delete_table(u'rippleapp_fbuser')
 
 
     models = {
-        u'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        u'auth.permission': {
-            'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        u'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        u'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
         u'rippleapp.artist': {
             'Meta': {'object_name': 'Artist'},
-            'events': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'artists'", 'symmetrical': 'False', 'to': u"orm['rippleapp.Event']"}),
+            'aliases': ('picklefield.fields.PickledObjectField', [], {}),
+            'data': ('picklefield.fields.PickledObjectField', [], {'default': 'None'}),
             'fb_like_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'fb_page_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'last_events': ('picklefield.fields.PickledObjectField', [], {}),
             'lastfm_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'mbrainz_cache': ('picklefield.fields.PickledObjectField', [], {}),
             'musicbrainz_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'social_media': ('picklefield.fields.PickledObjectField', [], {}),
             'soundcloud_id': ('django.db.models.fields.CharField', [], {'max_length': '256'})
         },
         u'rippleapp.event': {
             'Meta': {'object_name': 'Event'},
-            'fb_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'artists': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'events'", 'symmetrical': 'False', 'to': u"orm['rippleapp.Artist']"}),
+            'data': ('picklefield.fields.PickledObjectField', [], {'default': 'None'}),
+            'fb_id': ('django.db.models.fields.CharField', [], {'max_length': '256', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'lastfm_id': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
         },
         u'rippleapp.fbuser': {
-            'Meta': {'object_name': 'fbUser', '_ormbases': [u'auth.User']},
-            'f_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50', 'db_index': 'True'}),
-            'f_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '50', 'db_index': 'True'}),
-            'location': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'fb_data'", 'unique': 'True', 'primary_key': 'True', 'to': u"orm['auth.User']"})
+            'Meta': {'object_name': 'fbUser'},
+            'data': ('picklefield.fields.PickledObjectField', [], {'default': 'None'}),
+            'f_uid': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'}),
+            'friends_ids': ('picklefield.fields.PickledObjectField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'music_likes': ('picklefield.fields.PickledObjectField', [], {}),
+            'music_plays': ('picklefield.fields.PickledObjectField', [], {}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
         }
     }
 
