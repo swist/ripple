@@ -7,7 +7,7 @@ Handlebars.registerHelper('friendPhotoSize', function(friend) {
 });
 
 $(document).ready(function() {
-  var fbUser, uid, accessToken, cachedData = {};
+  var fbUser, uid, accessToken, friends, pages, cachedData = {};
   $(window).bind('fbAsyncInit', function() {
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
@@ -153,6 +153,8 @@ $(document).ready(function() {
       user: user
     }));
     goToServer('ajax/login', function(response) {
+      friends = response.friends;
+      pages = response.pages;
       response.user = user;
       $('.friends').html(friendTpl(response)).masonry({
         // options
@@ -166,12 +168,23 @@ $(document).ready(function() {
 
     });
 
+  // function findFriendById(id, foundCb) {
+  //   goToServer(function(response) {
+  //     for (friend in response.friends) {
+  //       if (friend.uid == id) {
+  //         foundCb(friend);
+  //         break;
+  //       }
+  //     }
+  //   });
+  // }
   function renderComparePage(user, friend_id) {
     theContent.html(userTpl({
       activeFriend: true,
-      user: user
+      user: user,
+      friend: 
     }));
-    
+
   }
   Path
     .map('#/user/:user_id/and/:friend_id')
