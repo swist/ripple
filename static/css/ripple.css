@@ -23,6 +23,10 @@ body {
   filter: dropshadow(color=#ffffff, offx=0, offy=0);
 }
 
+.ui-helper-hidden-accessible{
+  display: none;
+}
+
 .friends {
   /*background-color: #000;*/
 }
