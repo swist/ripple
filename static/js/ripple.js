@@ -59,14 +59,14 @@ $(document).ready(function() {
   function goToServer(url, responseCb) {
     if (cachedData[url]) {
       console.log('cache hit!');
-      return responseCb(cachedData[url]);
+      if (responseCb) responseCb(cachedData[url]);
     } else {
       FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
           accessToken = response.authResponse.accessToken;
           $.post(url, { fbid: response.authResponse.userID, token: accessToken }, function(response) {
             cachedData[url] = response;
-            responseCb(response);
+            if (responseCb) responseCb(response);
           });
         } else if (response.status === 'not_authorized') {
           // the user is logged in to Facebook, 
@@ -204,13 +204,31 @@ $(document).ready(function() {
       }
     });
 
+  function getFriendById(id) {
+    for (var i = 0; i < friends.length; i++) {
+      if (friends[i].uid == id) {
+        console.log('got', friends[i]);
+        return friends[i];
+      }
+    }
+  }
   function renderComparePage(user, friend_id) {
     theContent.html(userTpl({
+      activeDiscover: true,
       activeFriend: true,
-      user: user,
-      friend: null, 
+      user: user
     }));
-
+    goToServer('ajax/login', function(response) {
+      friends = response.friends;
+      pages = response.pages;
+      response.user = user;
+      theContent.html(userTpl({
+        activeDiscover: true,
+        activeFriend: true,
+        user: user,
+        friend: getFriendById(friend_id)
+      }));
+    });
   }
   Path
     .map('#/user/:user_id/and/:friend_id')
@@ -218,10 +236,11 @@ $(document).ready(function() {
       if (fbUser && fbUser['id'] == this.params['user_id']) {
         renderComparePage(fbUser, this.params['friend_id']);
       } else {
+        var _this = this;
         FB.api('/'+this.params['user_id'], function(response) {
           fbUser = response;
           //@todo check validity of response
-          renderComparePage(fbUser, this.params['friend_id']);
+          renderComparePage(fbUser, _this.params['friend_id']);
         });
       }
     });
