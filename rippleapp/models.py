@@ -99,10 +99,13 @@ class Artist(ripple):
 
 	def GetFacebookID(self):
 		if self.social_media:
-			graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
-			print graph_url
-			self.fb_page_id = requests.get(graph_url).json()
-			print self.fb_page_id
+			try:
+				graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
+				print graph_url
+				self.fb_page_id = requests.get(graph_url).json()['id']
+				print self.fb_page_id
+			except:
+				self.fb_page_id = '0'
 		else:
 			self.GetMusicBrainz()
 			self.GetFacebookID()
