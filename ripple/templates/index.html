@@ -66,17 +66,19 @@
             </div>
             <div class="span10">
               <div class="friends">
-                {{#each friends}}
-                  <a class="item friend-size-{{this.size}}" href="#/user/{{../user.id}}/friend/{{this.id}}">
-                    {{friendPhoto this}}
-                    <span class="number">{{this.size}} <i class="icon-thumbs-up"></i></span>
-                    <span class="name">{{this.name}}</span>
-                  </a>
-                {{/each}}
               </div>
             </div>
           </div>
         </div>
+      </script>
+      <script id="friend-template" type="text/x-handlebars-template">
+        {{#each friends}}
+          <a class="item friend-size-{{this.size}}" href="#/me/and/{{this.uid}}">
+            {{friendPhoto this}}
+            <span class="number">{{this.size}} <i class="icon-thumbs-up"></i></span>
+            <span class="name">{{this.name}}</span>
+          </a>
+        {{/each}}
       </script>
     {% endverbatim %}
 
