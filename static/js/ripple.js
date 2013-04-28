@@ -173,6 +173,33 @@ $(document).ready(function() {
   //     }
   //   });
   // }
+
+    $("#search").autocomplete({
+      source: function(req, add){
+        var suggestions = [];
+        console.log(friends);
+        $.each(friends, function(i, user){
+          if (user.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
+          suggestions.push(user.name);}
+        });
+        console.log(suggestions);
+        console.log(pages);
+        add(suggestions);
+      },
+      select: function(e, ui){
+        var friend = ui.item.value,
+        span = $("<span>").text(friend),
+        a = $("<a>").addClass("remove").attr({
+          href: "javascript:",
+          title: "Remove " + friend
+        }).text("x").appendTo(span);
+        span.insertBefore("#search");
+      },
+      change: function(){
+        $("#search").val("").css("top",2);
+      }
+    });
+
   function getFriendById(id) {
     for (var i = 0; i < friends.length; i++) {
       if (friends[i].uid == id) {

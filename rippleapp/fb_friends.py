@@ -11,8 +11,18 @@ def getFriends(token):
 
 
 	user_graph = facebook.GraphAPI(oauth_access_token)
-	music_likes = str(tuple(int(item['id']) for item in user_graph.get_connections('me', 'music')['data'])).replace("L", "")
+	music_likes = list(int(item['id']) for item in user_graph.get_connections('me', 'music')['data'])
+	music_plays = str(tuple(int(item['data']['song']['id']) for item in user_graph.get_connections('me', 'music.listens', limit = 500)['data'])).replace("L", "")
+	query = 'SELECT data FROM open_graph_object WHERE open_graph_object_id IN' + music_plays
 
+	res = user_graph.fql(query)
+	print 'queried plays'
+	for result in res:
+		if result['data']['musician'][0]['id'] not in music_likes:
+			music_likes.append(result['data']['musician'][0]['id'])
+
+
+	music_likes = str(tuple(music_likes)).replace("L", "")
 	query = {'friends': 'SELECT page_id, uid FROM page_fan WHERE page_id IN'+str(music_likes)+'AND uid IN (SELECT uid1 FROM friend WHERE uid2=me())',
 			 'friends_data': 'SELECT uid, name, username FROM user WHERE uid IN (SELECT uid FROM'+'#friends)',
 			 'pages_data': 'SELECT name, page_id, username FROM page WHERE page_id IN'+str(music_likes) }
