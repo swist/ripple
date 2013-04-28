@@ -21,8 +21,9 @@ def login(request):
 	if request.is_ajax():
 		print request.POST
         token = request.POST.get('token')
+        uid = request.POST.get('fbid')
         print token
-        data = json.dumps(getFriends(token))
+        data = json.dumps(getFriends(token, uid))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
 
