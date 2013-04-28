@@ -20,12 +20,12 @@ $(document).ready(function() {
      });
     Path.listen();
   });
-  function refreshCurrentUser() {
+  function refreshCurrentUser(successCb) {
     FB.api('/me', function(response) {
       fbUser = response;
       console.log('Good to see you, ' + response['name'] + '.');
       updateUserNavbar();
-      window.location.hash = '#/user/'+response['id'];
+      if (successCb) successCb();
     });
   }
   function updateUserNavbar() {
@@ -47,7 +47,9 @@ $(document).ready(function() {
     FB.login(function(response) {
       if (response.authResponse) {
         console.log('Welcome!  Fetching your information.... ');
-        refreshCurrentUser();
+        refreshCurrentUser(function() {
+          window.location.hash = '#/user/'+fbUser['id'];
+        });
       } else {
         console.log('User cancelled login or did not fully authorize.');
       }

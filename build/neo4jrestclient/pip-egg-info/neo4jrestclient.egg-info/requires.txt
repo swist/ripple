@@ -1,0 +1,2 @@
+httplib2
+lucene-querybuilder==0.1.6
