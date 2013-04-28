@@ -7,7 +7,7 @@ Handlebars.registerHelper('friendPhotoSize', function(friend) {
 });
 
 $(document).ready(function() {
-  var fbUser;
+  var fbUser, friends;
   $(window).bind('fbAsyncInit', function() {
     FB.getLoginStatus(function(response) {
       if (response.status === 'connected') {
@@ -18,7 +18,7 @@ $(document).ready(function() {
         // and signed request each expire
         var uid = response.authResponse.userID;
         var accessToken = response.authResponse.accessToken;
-        goToServer(uid, accessToken)
+        goToServer(uid, accessToken);
         refreshCurrentUser();
       } else if (response.status === 'not_authorized') {
         // the user is logged in to Facebook, 
@@ -44,7 +44,7 @@ $(document).ready(function() {
     }
     return cookieValue;
   }
-  
+
   function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -58,7 +58,10 @@ $(document).ready(function() {
     }
   });
   function goToServer(id, token){
-    $.ajax({type:'POST', url:'ajax/login', data: { fbid: id, token: token }});
+    //$.ajax({type:'POST', url:'ajax/login', data: { fbid: id, token: token }});
+    $.post('ajax/login', { fbid: id, token: token }, function(response) {
+      friends = response;
+    });
   }
   function refreshCurrentUser(successCb) {
     FB.api('/me', function(response) {

@@ -18,7 +18,7 @@ def login(request):
 	if request.is_ajax():
 		print request.POST
         token = request.POST.get('token')
-        print token 
+        print token
         data = json.dumps(getFriends(token))
         mimetype = 'application/json'
         return HttpResponse(data, mimetype) 
