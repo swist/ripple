@@ -130,11 +130,11 @@ $(document).ready(function() {
     .map('#/me')
     .to(function() {
       var user;
-      if (fbUser && fbUser['id'] == this.params['user_id']) {
+      if (fbUser) {
         user = fbUser;
         renderDiscoverPage(fbUser);
       } else {
-        FB.api('/'+this.params['user_id'], function(response) {
+        FB.api('/me', function(response) {
           //@todo check validity of response
           renderDiscoverPage(response);
         });
