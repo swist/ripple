@@ -1,3 +1,11 @@
+Handlebars.registerHelper('friendPhoto', function(friend) {
+  var size = 78 * Math.pow(2, friend['size']);
+  return new Handlebars.SafeString('<img src="https://graph.facebook.com/'+friend['id']+'/picture?width='+size+'&height='+size+'" width="'+size+'" height="'+size+'">');
+});
+Handlebars.registerHelper('friendPhotoSize', function(friend) {
+  return 78 * Math.pow(2, friend['size']);
+});
+
 $(document).ready(function() {
   var fbUser;
   $(window).bind('fbAsyncInit', function() {
@@ -80,19 +88,274 @@ $(document).ready(function() {
       var user;
       if (fbUser && fbUser['id'] == this.params['user_id']) {
         user = fbUser;
-        theContent.html(userTpl({
-          activeDiscover: true,
-          user: fbUser
-        }));
+        renderDiscoverPage(fbUser);
       } else {
         FB.api('/'+this.params['user_id'], function(response) {
-          theContent.html(userTpl({
-          activeDiscover: true,
-            user: response
-          }));
+          //@todo check validity of response
+          renderDiscoverPage(response);
         });
       }
     });
+  function renderDiscoverPage(user) {
+    theContent.html(userTpl({
+      activeDiscover: true,
+      user: user,
+      friends: [
+        {
+          id: 'quantum.qwah',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'ivanchanzhenghao',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'swistak',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 3,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'girikesavan1',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'quantum.qwah',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'ivanchanzhenghao',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'swistak',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 3,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'girikesavan1',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'quantum.qwah',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'ivanchanzhenghao',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'swistak',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 3,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'girikesavan1',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'quantum.qwah',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'ivanchanzhenghao',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'swistak',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 1,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'limxinsiang',
+          name: 'Jian Yuan Lee',
+          size: 3,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        },
+        {
+          id: 'girikesavan1',
+          name: 'Jian Yuan Lee',
+          size: 2,
+          commonLikes: [
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'},
+            {id: 'tokimonsta', name: 'TOKiMONSTA'}
+          ]
+        }
+      ]
+    }));
+    $('.friends').masonry({
+      // options
+      itemSelector : '.item'
+    });
+  }
 
   Path
     .map('#/user/:user_id/artists')
