@@ -6,6 +6,10 @@ from ripple.settings import FB_KEY
 def index(request):
 	return HttpResponse(render_to_string('index.html', {'FB_ID':FB_KEY}))
 
+def login(request):
+	if request.is_ajax():
+		print request.POST
+		return HttpResponse('true')
 
 # All this stuff to allow verbatim
 from django import template
