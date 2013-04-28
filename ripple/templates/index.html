@@ -62,16 +62,45 @@
                 <img src="https://graph.facebook.com/{{user.id}}/picture?width=170&height=170">
               </p>
               <ul class="nav nav-list usernav">
-                <li><h2 class="username">{{user.first_name}}</h2></li>
+                <li><h2 class="username">{{user.name}}</h2></li>
                 <li {{#if activeDiscover}}class="active"{{/if}}><a href="#/user/{{user.id}}">Discover</a></li>
                 <li {{#if activeArtists}}class="active"{{/if}}><a href="#/user/{{user.id}}/artists">Artists</a></li>
               </ul>
             </div>
-            <div class="span10">
-              <div class="friends">
+            {{#if activeFriend}}
+              {{#if friend}}
+                <div class="span2 userinfo friendinfo">
+                  <p class="text-center">
+                    <img src="https://graph.facebook.com/{{friend.uid}}/picture?width=170&height=170">
+                  </p>
+                  <ul class="nav nav-list usernav">
+                    <li><h2 class="username">{{friend.name}}</h2></li>  
+                    <li><a href="https://www.facebook.com/{{user.uid}}"><i class="icon-facebook"></i> Profile</a></li>
+                  </ul>
+                  <u class="icon-plus large-plus"></u>
+                </div>
+                <div class="span8">
+                  {{#each friend.likes}}
+                    <div class="well artist-item">
+                      <h3>
+                        <a href="#/artist/{{this.page_id}}">
+                          <img src="https://graph.facebook.com/{{this.page_id}}/picture?width=60&height=60" width="60" height="60" class="pull-left">
+                          {{this.name}}
+                        </a>
+                      </h3>
+                    </div>
+                  {{/each}}
+                </div>
+              {{else}}
                 <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+              {{/if}}
+            {{else}}
+              <div class="span10">
+                <div class="friends">
+                  <h1 class="loading text-center"><i class="icon-spinner icon-spin"></i> Analyzing Friends...</h1>
+                </div>
               </div>
-            </div>
+            {{/if}}
           </div>
         </div>
       </script>
