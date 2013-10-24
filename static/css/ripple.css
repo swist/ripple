@@ -34,8 +34,11 @@ body {
   /*background: url(../img/bg/purty_wood.png);*/
 }
 .userinfo .nav {
+  text-overflow: ellipsis;
   font-size: 14px;
 }
+
+
 .friendinfo {
   position: relative;
 }

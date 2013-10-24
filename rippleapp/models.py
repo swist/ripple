@@ -51,12 +51,13 @@ class Artist(ripple):
 		mbrainz.set_useragent("Example music app", "0.1", "http://example.com/music")
 		result = mbrainz.search_artists(self.name)['artist-list'][0]
 		# for result in results:
-		# 	if int(result['ext:score']) > 75:
-		# 		break
+		#   if int(result['ext:score']) > 75:
+		#       break
 		#print result
 		self.musicbrainz_id = result['id']
 		self.mbrainz_cache = mbrainz.get_artist_by_id(self.musicbrainz_id, ['artist-rels', 'url-rels'])['artist']
-		self.social_media = self.mbrainz_cache.pop('url-relation-list')
+		if 'url-relation-list' in self.mbrainz_cache:
+			self.social_media = self.mbrainz_cache.pop('url-relation-list')
 		if 'artist-relation-list' in self.mbrainz_cache:
 			self.aliases = self.mbrainz_cache.pop('artist-relation-list')
 
@@ -69,6 +70,17 @@ class Artist(ripple):
 				self.soundcloud_url = item['target']
 				self.soundcloud_id = sc.get('/resolve', url = item['target']).id
 				break
+		if not self.soundcloud_id:
+			print 'no soundcloud id'
+			client = soundcloud.Client(client_id = SOUNDCLOUD_CLIENT_ID)
+			results = client.get('/users', q = self.name)
+			for SoundcloudUser in results:
+				if SoundcloudUser.track_count != 0:
+					if self.name.lower() in SoundcloudUser.username.lower() or self.name.replace(" ","").lower() in SoundcloudUser.username.lower():
+						self.soundcloud_id = SoundcloudUser.id
+						self.soundcloud_url = SoundcloudUser.permalink_url
+			print self.soundcloud_id, self.soundcloud_url
+			
 		# url = (item for item in self.social_media if item['type'] == 'soundcloud').next()['target']
 				# self.soundcloud_id = sc.get('/resolve', url = url).id
 
@@ -100,17 +112,16 @@ class Artist(ripple):
 			self.last_events = {}
 
 	def GetFacebookID(self):
-		if self.social_media:
-			try:
-				graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
-				print graph_url
-				self.fb_page_id = requests.get(graph_url).json()['id']
-				print self.fb_page_id
-			except:
-				self.fb_page_id = '0'
-		else:
-			self.GetMusicBrainz()
-			self.GetFacebookID()
+		if not self.fb_page_id:
+			self.GetMusicBrainz()	
+		try:
+			graph_url = (item for item in self.social_media if 'facebook' in item['target']).next()['target'].replace('www', 'graph')
+			print graph_url
+			self.fb_page_id = requests.get(graph_url).json()['id']
+			print self.fb_page_id
+		except:
+			self.fb_page_id = '0'
+
 
 class Event(ripple):
 	lastfm_id = models.CharField(max_length = 1024)

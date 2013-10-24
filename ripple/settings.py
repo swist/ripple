@@ -49,7 +49,7 @@ elif getpass.getuser() == 'jian':
     }
 
 try:
-    FB_KEY = os.environ["FB_ID"]
+    FB_KEY = "189142797906426"
 except KeyError:
     print "No FB API key given"
     FB_KEY = 'clearly_fake_key'

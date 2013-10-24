@@ -204,7 +204,8 @@ $(document).ready(function() {
       response.user = user;
       $('.friends').html(friendTpl(response)).masonry({
         // options
-        itemSelector : '.item'
+        itemSelector : '.item',
+        columnWidth: 78
       });
     });
   }
@@ -219,9 +220,12 @@ $(document).ready(function() {
       friends = response.friends;
       pages = response.pages;
       response.user = user;
+      $('.friends').html('');
+      console.log('masonry fucks up here');
       $('.friends').html(artistTpl(response)).masonry({
         // options
-        itemSelector : '.item'
+        itemSelector : '.item2',
+        columnWidth: 78
       });
     });
   }
@@ -264,7 +268,7 @@ $(document).ready(function() {
         });
         $.each(pages, function(i, page){
           if (page.name.toLowerCase().indexOf(req.term.toLowerCase()) !== -1){
-          suggestions.push({'value':page.name, 'id': page.id, 'category' : 'Artists'});}
+          suggestions.push({'value':page.name, 'id': page.page_id, 'category' : 'Artists'});}
         });
         add(suggestions);
       },
