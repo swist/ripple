@@ -10,43 +10,9 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
 
-if getpass.getuser() == 'swistak':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'ripple',                      # Or path to database file if using sqlite3.
-            # The following settings are not used with sqlite3:
-            'USER': 'swistak',
-            'PASSWORD': 'marakesy123',
-            'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-            'PORT': '5432',                      # Set to empty string for default.
-        }
-    }
-elif getpass.getuser() == 'txsl':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'hacked',                      # Or path to database file if using sqlite3.
-            # The following settings are not used with sqlite3:
-            'USER': 'txsl',
-            'PASSWORD': 'pass',
-            'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-            'PORT': '5432',                      # Set to empty string for default.
-        }
-    }
-elif getpass.getuser() == 'jian':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-            'NAME': 'ripple',                      # Or path to database file if using sqlite3.
-            # The following settings are not used with sqlite3:
-            'USER': 'postgres',
-            'PASSWORD': '123',
-            'HOST': '127.0.0.1',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-            'PORT': '5432',                      # Set to empty string for default.
-        }
-    }
 
 try:
     FB_KEY = "189142797906426"
@@ -54,9 +20,12 @@ except KeyError:
     print "No FB API key given"
     FB_KEY = 'clearly_fake_key'
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
